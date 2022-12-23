@@ -1,0 +1,163 @@
+syntax="proto3";
+package protocol;
+import "common.proto";
+enum TxStatus {
+  UNK_TX_STATUS = 0;
+  PENDING_TX_STATUS = 1;
+  CONFIRMED_TX_STATUS = 2;
+}
+enum TxDirection {
+  UNK_TX_DIR = 0;
+  IN_TX_DIR = 1;
+  OUT_TX_DIR = 2;
+}
+enum TxType {
+  UNK_TX_TYPE = 0;
+  REGULAR_TX_TYPE = 1;
+  DEPOSIT_APPROVE_FEE_TX_TYPE = 2;
+  APPROVE_TOKEN_TRANSFER_TX_TYPE = 3;
+}
+message TransactionsRequest {
+  oneof entity {
+    string wallet_id = 1;
+    string address = 2;
+    uint32 tx_id = 3;
+    string tx_hash = 4;
+    string client_id = 5;
+}
+  Chain chain = 20;
+  Currency currency = 21;
+  TxStatus status = 22;
+  TxDirection direction = 23;
+  TxType type = 24;
+  uint32 last_seen_id = 25;
+}
+message TransactionsResponse {
+  repeated TxRecord transactions = 1;
+}
+message ConfirmedClientTransactionsRequest {
+      oneof entity {
+    string wallet_id = 1;
+    string address = 2;
+    uint32 tx_id = 3;
+    string tx_hash = 4;
+}
+  Chain chain = 20;
+  Currency currency = 21;
+  TxDirection direction = 22;
+  TxType type = 23;
+  uint32 last_seen_id = 24;
+}
+message ConfirmedClientTransactionsResponse {
+  repeated TxRecord transactions = 1;
+}
+message TxRecord {
+  uint32 id = 1;
+  string hash = 2;
+  string amount = 3;
+  string address = 4;
+  uint64 block_height = 5;
+  Currency currency = 6;
+  TxStatus status = 7;
+  uint64 created_at = 8;
+  uint64 updated_at = 9;
+  uint64 confirmations = 10;
+  TxDirection direction = 11;
+  TxType type = 12;
+  Chain chain = 13;
+  oneof chain_details {
+    BitcoinTxDetails btc_details = 50;
+    EthereumTxDetails eth_details = 51;
+    TronTxDetails trx_details = 52;
+} }
+message BitcoinTxDetails {
+  message ScriptSig {
+    string asm = 1;
+    string hex = 2;
+  }
+  message Input {
+    string txid = 1;
+    int64 index = 2;
+
+        ScriptSig scriptSig = 3;
+    int64 sequence = 4;
+    repeated string witness = 5;
+    string address = 6;
+}
+  message ScriptPubKey {
+    string asm = 1;
+    string hex = 2;
+    string type = 3;
+    string address = 4;
+}
+  message Output {
+    string value = 1;
+    int64 n = 2;
+    ScriptPubKey scriptPubKey = 3;
+}
+  string value = 1;
+  string fee = 2;
+  int64 time = 3;
+  int64 version = 4;
+  int64 size = 5;
+  int64 vsize = 6;
+  int64 weight = 7;
+  int64 locktime = 8;
+  repeated Input vin = 9;
+  repeated Output vout = 10;
+}
+message ApprovalLog {
+  string owner = 1;
+  string spender = 2;
+  string value = 3;
+}
+message TransferLog {
+  string from = 1;
+  string to = 2;
+  string value = 3;
+}
+message TxLog {
+  string contract_address = 1;
+  uint64 index = 2;
+oneof log {
+
+      ApprovalLog approval = 50;
+    TransferLog transfer = 51;
+  }
+}
+message EthereumTxDetails {
+  string from = 1;
+  string to = 2;
+  string value = 3;
+  uint64 gas_limit = 4;
+  uint64 gas_used = 5;
+  string gas_price = 6;
+  string max_fee_per_gas = 7;
+  string max_priority_fee_per_gas = 8;
+  uint64 nonce = 9;
+  uint32 type = 10;
+  uint64 index = 11;
+  uint64 status = 12;
+  repeated TxLog logs = 50;
+}
+message TronTxDetails {
+  message Resource {
+    int64 energy_usage = 1;
+    int64 energy_fee = 2;
+    int64 origin_energy_usage = 3;
+    int64 energy_usage_total = 4;
+    int64 net_usage = 5;
+    int64 net_fee = 6;
+}
+  string from = 1;
+  string to = 2;
+  string value = 3;
+  int64 fee = 4;
+  int64 fee_limit = 5;
+  int64 timestamp = 6;
+  int64 expiration = 7;
+  string result = 8; // SUCCESS or FAIL
+  Resource resource = 9;
+  string contract_type = 10; // TransferContract or TriggerSmartContract
+  repeated TxLog logs = 11;
+}

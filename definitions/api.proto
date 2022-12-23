@@ -1,0 +1,124 @@
+ 
+syntax="proto3";
+package protocol;
+import "common.proto";
+import "explorer.proto";
+import "tags.proto";
+message ClientRequest {
+  string trx = 1;
+  string client_id = 2;
+  CreateNewAddressRequest create_new_address_request = 10;
+  BalancesRequest balances_request = 11;
+  TransactionsRequest transactions_request = 12;
+  EnqueuePayoutRequest enqueue_payout_request = 13;
+  PayoutDetailsRequest payout_details_request = 14;
+  MainAccountsRequest main_accounts_request = 15;
+  ModifyTagsRequest modify_tags_request = 16;
+  ListTagsRequest list_tags_request = 17;
+  ConfirmedClientTransactionsRequest confirmed_client_transactions_request = 18;
+     }
+message ServerResponse {
+  CreateNewAddressResponse create_new_address_response = 1;
+  BalancesResponse balances_response = 2;
+  TransactionsResponse transactions_response = 3;
+  EnqueuePayoutResponse enqueue_payout_response = 4;
+  PayoutDetailsResponse payout_details_response = 5;
+  MainAccountsResponse main_accounts_response = 6;
+  ModifyTagsResponse modify_tags_response = 7;
+  ListTagsResponse list_tags_response = 8;
+  ConfirmedClientTransactionsResponse confirmed_client_transactions_response = 9;
+  ServerError error = 100;
+}
+enum ServerError {
+  Ok = 0;
+  MissingRequestBody = 1;
+  ParsingError = 2;
+  ProcessingError = 3;
+  NotImplemented = 4;
+  NotFound = 5;
+  UnknownCurrency = 6;
+  NotEnoughBalance = 7;
+  UnkownClient = 8;
+}
+message CreateNewAddressRequest {
+  string wallet_id = 1;
+  Currency currency = 2;
+}
+message CreateNewAddressResponse {
+  string wallet_id = 1;
+  Currency currency = 2;
+  string address = 3;
+}
+message BalancesRequest {
+  oneof addr {
+    string wallet_id = 1;
+    string address = 2;
+    string client_id = 3;
+} }
+message BalancesResponse {
+  repeated BalanceRecord balances = 2;
+
+    }
+message BalanceRecord {
+  string address = 1;
+  Currency currency = 2;
+  string balance = 3;
+  string unconfirmed_in_balance = 4;
+  string unconfirmed_out_balance = 5;
+  string native_balance = 6;
+  string wallet_id = 7;
+  string client_id = 8;
+}
+message EnqueuePayoutRequest {
+  oneof addr {
+    string wallet_id = 1;
+    string address = 2;
+  }
+  Currency currency = 3;
+  string to = 4;
+  string amount = 5;
+}
+message EnqueuePayoutResponse {
+  message Payout {
+    uint32 id = 1;
+    string from = 2;
+    string to = 3;
+    string amount = 4;
+}
+  repeated Payout payouts = 1;
+}
+enum PayoutStatus {
+  UNK_PAYOUT_STATUS = 0;
+  PENDING_PAYOUT_STATUS = 1;
+  PROCESSING_PAYOUT_STATUS = 2;
+  COMPLETED_PAYOUT_STATUS = 3;
+  FAILED_PAYOUT_STATUS = 4;
+}
+message PayoutRecord {
+  uint32 id = 1;
+  string from = 2;
+  string to = 3;
+  string amount = 4;
+  PayoutStatus status = 5;
+
+ 
+string fail_reason = 6;
+  uint64 created_at = 7;
+  uint64 updated_at = 8;
+  string tx_hash = 9;
+}
+message PayoutDetailsRequest {
+  uint32 id = 1;
+}
+message PayoutDetailsResponse {
+  PayoutRecord payout = 1;
+}
+message MainAccountsRequest {}
+message MainAccountsResponse {
+  message Account {
+    string address = 1;
+    string balance = 2;
+    Chain chain = 3;
+}
+  repeated Account accounts = 1;
+}

@@ -1,0 +1,17 @@
+ 
+syntax="proto3";
+package protocol;
+enum Currency {
+  UNK_CUR = 0;
+  BTC_CUR = 1;
+  ETH_CUR = 2;
+  TRX_CUR = 3;
+  ERC20_USDT_CUR = 4;
+  TRC20_USDT_CUR = 5;
+}
+enum Chain {
+  UNK_CHAIN = 0;
+  BTC_CHAIN = 1;
+  ETH_CHAIN = 2;
+  TRX_CHAIN = 3;
+}
