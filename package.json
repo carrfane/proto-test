@@ -10,6 +10,7 @@
   "author": "Hector Carrillo",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.2.1",
     "node-grpc-client": "^1.5.0",
     "protobufjs": "^7.1.2"
   }

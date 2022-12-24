@@ -4,6 +4,11 @@ package protocol;
 import "common.proto";
 import "explorer.proto";
 import "tags.proto";
+
+service Client {
+  rpc Request(ClientRequest) returns (ServerResponse);
+}
+
 message ClientRequest {
   string trx = 1;
   string client_id = 2;

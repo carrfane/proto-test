@@ -1,8 +1,9 @@
-import protobuf from 'protobufjs';
 import grpc from 'grpc';
+import protobuf from 'protobufjs';
+
 
 (() => {
-  protobuf.load('./definitions/api.proto', (err, root) => {
+  protobuf.load('./definitions/test.proto', (err, root) => {
     const Client = grpc.makeGenericClientConstructor({});
     const client = new Client('localhost:50051', grpc.credentials.createInsecure());
     
@@ -16,19 +17,16 @@ import grpc from 'grpc';
       )
     }
 
-    const Protocol = root.lookup('Client');
+    const Greeter = root.lookup('Greeter');
+    const greeter = Greeter.create(rpcImpl, false, false);
 
+    greeter.sayHello({ name: 'you' }, function(err, response) {
+      if (err) {
+        console.log('Error:', err);
+        return;
+      }
 
-    const payload = {
-      walletId: '123',
-      currency: 1
-    };
-
-
-    const protocol = Protocol.create(rpcImpl, false, false);
-
-    protocol.Client({ walletId: '1234', currency: 1 }, (err, response) => {
-      console.log(err, response);
-     });
+      console.log('Greeting:', response.message);
+  });
   });
 })();
